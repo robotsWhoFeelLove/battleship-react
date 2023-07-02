@@ -1,0 +1,52 @@
+.player-board{
+    width: 50vw;
+    height: 50vw;
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    grid-template-rows: repeat(10, 1fr);
+}
+.space{
+    border: 5px solid rgba(1, 107, 229, 0.661);
+    border-radius: 15px;
+
+}
+
+.player-area{
+    display: grid;
+    grid-template-columns: 5fr 10fr;
+}
+
+.loading-dock {
+    width: 25vw;
+    display: grid;
+    grid-template-columns:repeat(5, 1fr);
+    grid-template-rows: repeat(10,1fr);
+    border: 2px solid rgba(163, 162, 162,.8);
+}
+
+.block{
+    border: 5px solid rgba(163, 162, 162,.8);
+    border-radius: 15px;
+}
+.carrier{
+    /* grid-column-start:1;
+    grid-column-end: -1; */
+    grid-column: span 5;
+    display: grid;
+    grid-template-columns: repeat(5,1fr);
+}
+.player-board>div.over{
+    animation: pop 0.3s linear .3;
+    /* border:5px solid#0077cc;
+    color:#0077cc;
+    border-radius: 15px; */
+}
+.pop{
+    animation: pop 0.3s linear .3;
+    border:5px solid#0077cc;
+    color:#0077cc;
+    border-radius: 15px;
+  }
+  @keyframes pop{
+    50%  {transform: scale(1.2);}
+  }
