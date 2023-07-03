@@ -1,10 +1,12 @@
 import ps from "../index.js"
 import Ship from "./ship.js"
+import inArr from "./inArr.js"
 
 
 
 const Gameboard = function(name,otherBoard){
     console.log("constructing board")
+    let shipArr = []
     const board = {
         name: name,
         shipsRemaining: 5,
@@ -19,7 +21,7 @@ const Gameboard = function(name,otherBoard){
         }
    }
    console.log(board)
-   ps.publish(`${name}`,board,otherBoard,true)
+//    ps.publish(`${name}`,board,otherBoard,true)
    if(name="playerBoard"){console.log(board)}
 
 
@@ -27,8 +29,15 @@ const Gameboard = function(name,otherBoard){
         if(!xArr.length) return true;
             let x3 = xArr.shift()
             let y3 = yArr.shift()
-            if(x3 > 9 || x3 < 0 || y3> 9 || y3 < 0 ||
-               board.spaces[`space${x3}${y3}`].isShip) return false;
+            console.log("is Ship? ")
+            console.log(board.spaces[`space${x3}${y3}`]? board.spaces[`space${x3}${y3}`].isShip : "no space")
+            if(x3 > 9 || x3 < 0 || y3> 9 || y3 < 0 || inArr(shipArr,x3,y3))
+            //    board.spaces[`space${x3}${y3}`].isShip) 
+           { 
+               return false;} else {
+                // console.log("check for ship " + inArr(shipArr,x3,y3) + x3 + y3)
+            shipArr.push([x3,y3])
+           }
 
             return checkLoc (xArr,yArr)
         }
@@ -40,13 +49,13 @@ const Gameboard = function(name,otherBoard){
         function moveArr(x,y,length,dir){
             if (length <= 0)return;
             if(dir == "horizontal" && length > 0){
-                xArr.push(x)
-                yArr.push(y)
-                moveArr(x + 1,y,length-1,dir)
+                xArr.push(Number(x))
+                yArr.push(Number(y))
+                moveArr(Number(x + 1),y,length-1,dir)
             } else {
                 xArr.push(x)
                 yArr.push(y)
-                moveArr(x,y+1,length-1)
+                moveArr(Number(x),Number(y+1),length-1,dir)
             }
          console.log({xArr,yArr})
         }

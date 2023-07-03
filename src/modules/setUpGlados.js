@@ -3,8 +3,8 @@ import ps from "../index"
 // const gladosBoard = Gameboard(glados.name)
 
 const setUpGlados = function (gladosBoard){
-    let shipsLeft = 5 
-    console.log(gladosBoard)
+    let shipsLeft = 4 
+    
   
      ps.subscribe("try-ship",gladosBoard.placeShip)
      ps.subscribe("ship-placed",computerSetup);
@@ -13,8 +13,10 @@ const setUpGlados = function (gladosBoard){
           if(test && !shipsLeft){
               ps.unsubscribe("try-ship",gladosBoard.placeShip);
               ps.unsubscribe("ship-placed",computerSetup);
+              ps.publish("gladosBoard-change",gladosBoard)
+              console.log("updated GladosBoard")
             //   ps.publish("start-board","playerBoard",gladosBoard)
-              return;
+              return gladosBoard;
           } 
           let x = Math.floor(Math.random()*10);
           let y = Math.floor(Math.random()*10);

@@ -168,7 +168,7 @@ ps.subscribe("gladosBoard-created",setUpGlados)
 // ps.subscribt("start-game",AnimatedDivs)
 
 document.querySelector(".start").addEventListener("click",()=>
-   ps.publish("start-game",""))
+   console.log(gladosBoard.spaces))
 
    const listener = document.addEventListener;
 
