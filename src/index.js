@@ -27,6 +27,12 @@ function updateGladosBoard(board){
   console.log(gladosBoard)
 }
 
+function removeShip(test){
+   if(test) 
+  //  console.log(removing + dragItem)
+   dragItem.classList.add("hide") 
+}
+
 ps.subscribe("gladosBoard-change",updateGladosBoard)
 ps.subscribe("new-message",testFunc);
 // ps.subscribe("start-board",startGame)
@@ -40,6 +46,7 @@ ps.subscribe("playerBoard",playerBoard.placeShip)
 // ps.subscribe("content-generated",App)
 // ps.subscribe("playerBoard",AnimatedDivs)
 ps.publish("create-gladosBoard",gladosBoard)
+ps.subscribe("ship-placed",removeShip)
 
 // document.querySelector(".start").addEventListener("click",()=>
 //    ps.publish("start-board",""))

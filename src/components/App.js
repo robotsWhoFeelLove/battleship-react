@@ -45,6 +45,14 @@ function handleClick(){
     playerBoard.board),500)
 }
 
+function handleDragEnter(e){
+  e.target.classList.add("pop")
+}
+
+function handleDragLeave(e){
+  e.target.classList.remove("pop")
+}
+
 function updateBoard(){
   console.log("updating Board")
   // setTimeout(setBoard(gladosBoard.board),0)
@@ -54,6 +62,7 @@ function updateBoard(){
     setBoard(playerBoard.board)}
   ,0)
 }
+let shipsToPlayce = 5
 
 function handleDrop(props){
   console.log(dragItem)
@@ -69,7 +78,7 @@ function handleDrop(props){
   props.target.classList.add("air-carrier")
   // props.target.appendChild(dragItem)
   // console.log(props.target)
-  dragItem.classList.add("hide")
+  // dragItem.classList.add("hide")
 }
 
   const boardSpaces = Object.values(board.spaces)
@@ -98,6 +107,8 @@ function Space(props){
         id = {props.id}
         onClick={handleClick}
         onDrop={handleDrop}
+        onDragEnter={handleDragEnter}
+        onDragLeave={handleDragLeave}
         ></div>
   )
   }
