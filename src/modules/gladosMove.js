@@ -11,7 +11,7 @@ import ps from "../index"
     
     if(playerBoard.board.spaces[`space${x}${y}`].isHit) {
         console.log(`move ${x}${y} aborted`);
-        gladosMove()} else {
+        gladosMove(playerBoard)} else {
             console.log("glados-move")
         ps.publish("glados-move",x,y)
         }  

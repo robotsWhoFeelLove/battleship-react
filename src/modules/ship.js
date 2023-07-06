@@ -13,10 +13,14 @@ import ps from "../index"
 
         },
         isSunk: function (){
+            console.log("check for sunk")
             if(self.length <= self.hits) {
                 console.log("Ship is sunk")
+                // ps.show()
+                ps.publish("display-message","SHIP SUNK!")
                 ps.publish("ship-sunk",self)
             } else {
+                ps.publish("ship-sunk",false)
             console.log("not sunk")
             console.log(self.length); 
             console.log(self.hits);

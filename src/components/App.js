@@ -5,7 +5,7 @@ import { dragItem } from "../index";
 import ps from "../index"
 import AnimatedDivs from "./AnimatedDivs";
 // import Gameboard from "../modules/gameBoard";
-import { playerBoard, stagingBoard } from "../index";
+import { playerBoard, stagingBoard,gameInProgress } from "../index";
 import { gladosBoard } from "../index";
 
 // const dropzone = new Dropzone("div.player-board", { url: "/file/post" });
@@ -13,21 +13,9 @@ import { gladosBoard } from "../index";
 
 function App(props) {
   return(<>
-    {/* <div className="player-area">
-      <div className="loading-dock">
-        <button className="rotate">Rotate</button>
-        <div draggable="true" id="carrier5" className="carrier">
-          <div className="block" />
-          <div className="block" />
-          <div className="block" />
-          <div className="block" />
-          <div className="block" />
-        </div>
-      </div>
-      <div className="player-board"> */}
+
       <Board />
-      {/* </div>
-    </div> */}
+
     </>)
 }
 
@@ -39,64 +27,76 @@ const [board,setBoard] = useState(playerBoard.board)
 
 
 function handleClick(e){
+  // if (shipsLeft)
+  //   // browser supports multi-touch
+  // }
   let x = Number(e.target.id.substring(5,6))
   let y = Number(e.target.id.substring(6,7))
   console.log({x,y})
-  if(board.name==="gladosBoard"){
+  if(board.name==="gladosBoard" && gameInProgress){
   ps.publish("gladosBoard-attack",x,y)
   // }
   setTimeout(updateBoard,0);
+  if(gameInProgress)
+ { setTimeout(()=> {
+    setBoard(playerBoard.board)},
+  2000)
   setTimeout(()=> {
-    setBoard(board.name === "playerBoard" ? gladosBoard.board :
-    playerBoard.board)},
-  3000)
-  setTimeout(()=> {
-    setBoard(playerBoard.board)
+  //   setBoard(playerBoard.board)
     ps.publish("glados-attack",playerBoard);
-
     updateBoard();
+    setTimeout(()=>{
+      setBoard(gladosBoard.board)
+      // reRender(board)
+      updateBoard()
+      // updateBoard()
+      ps.publish("display-message","YOUR TURN!")},1500)
   },
-  4000)
+  3000)}
 }
 }
 
+// function reRender(board){
+//   // setTimeout(updateBoard,0)
+// const boardSpaces = Object.values(board.spaces)
+// // console.log(boardSpaces)
+// return (
+// <>
+//  {boardSpaces.map(createSpaces)}
+// </>
+// );
+// }
 function handleDragEnter(e){
   e.target.classList.add("pop")
-  // let shipLength = dragItem.id.substring(dragItem.id.length-1)
-  // let dir = dragItem.classList.contains("vertical")? "vertical ": "horizontal"
-  // let x = Number(e.target.id.substring(5,6))
-  // let y = Number(e.target.id.substring(6,7))
-  // // console.log({x,y,shipLength,dir})
-  // // ps.publish("playerBoard",x,y,shipLength,dir)
-  // setTimeout(updateBoard,0)
-  // e.target.classList.add("pop")
+
 }
 
 function handleDragLeave(e){
   e.target.classList.remove("pop")
-  // let shipLength = dragItem.id.substring(dragItem.id.length-1)
-  // let dir = dragItem.classList.contains("vertical")? "vertical ": "horizontal"
-  // let x = Number(e.target.id.substring(5,6))
-  // let y = Number(e.target.id.substring(6,7))
-  // setTimeout(updateBoard,0)
-  // e.target.classList.remove("pop")
+
 }
 
 function updateBoard(){
   console.log("updating Board")
   // setTimeout(setBoard(gladosBoard.board),0)
-  const prevBoard = board
-  setBoard(stagingBoard.board)
+  let previous;
+  setBoard((prevBoard)=>{
+    previous = prevBoard
+    return stagingBoard.board})
   setTimeout(()=>{
     console.log("setting board")
-    setBoard(prevBoard)}
+    setBoard(previous)}
   ,0)
 }
-const [shipsLeft,setShipsLeft] = useState(4)
+const [shipsLeft,setShipsLeft] = useState(5)
+
+function handleTouchEnd(el){
+  console.log(el)
+}
 
 function handleDrop(el){
   // console.log(dragItem)
-
+  setShipsLeft(prevValue => prevValue - 1)
   let shipLength = dragItem.id.substring(dragItem.id.length-1)
   let dir = dragItem.classList.contains("vertical")? "vertical ": "horizontal"
   console.log(shipLength)
@@ -106,20 +106,19 @@ function handleDrop(el){
   ps.publish("playerBoard",x,y,shipLength,dir)
   
 
-  if(shipsLeft < 1){
-    ps.publish("display-message","Game Start!");
+  if(shipsLeft == 1){
+    ps.publish("display-message","GAME START!");
     setTimeout(
       ()=> setBoard(gladosBoard.board),1000)
+      
   } else {
-    ps.publish("display-message","Ships remaining " + shipsLeft)
+    ps.publish("display-message",shipsLeft-1 + " REMAINING" )
     
   }
-  setShipsLeft(prevValue => prevValue - 1)
+  // setShipsLeft(prevValue => prevValue - 1)
   setTimeout(updateBoard,0)
   el.target.classList.add("air-carrier")
-  // props.target.appendChild(dragItem)
-  // console.log(props.target)
-  // dragItem.classList.add("hide")
+
 }
 
   const boardSpaces = Object.values(board.spaces)
@@ -146,10 +145,11 @@ function Space(props){
     <div
         className={props.classList}
         id = {props.id}
-        onClick={handleClick}
+        onClick={shipsLeft? handleDrop : handleClick}
         onDrop={handleDrop}
         onDragEnter={handleDragEnter}
         onDragLeave={handleDragLeave}
+        onTouchEnd={shipsLeft? handleDrop: handleClick}
         ></div>
   )
   }
@@ -162,13 +162,20 @@ function Space(props){
         if(space.boardName == "gladosBoard"){
           classList = classList + " enemy"
          }
-         if(space.isHit && space.isShip != null){
-          classList = classList + " hit"}
-        if(space.isHit && space.isShip == null){
-          classList = classList + " miss"}  
-        if(space.isShip){ //&& space.boardName == "playerBoard"){
+        //  if(space.isHit && !space.isShip == null){
+        //   classList = classList + " hit"}
+        if(space.isHit){
+          classList = classList + " hit"
+        }  
+        if(space.isHit && space.isShip == null){console.log("miss registered")
+          classList = classList + " miss"
+        } 
+        if(space.isShip && space.boardName == "playerBoard"){
           // console.log({space})
           classList = `space ship`
+          if(space.isHit){
+            classList = classList + " hit"
+          }  
           if(space.isShip.self.length==5){
             classList = classList + " air-carrier"
            }
@@ -182,17 +189,10 @@ function Space(props){
           classList = classList + " destroyer"
          }
        
-        //  if(boardName == gladosBoard){
-        //   classList = classList + " air-carrier"
-        //  }
-      // } else {
-      //   classList = "space enemy"
-      // }
+
       
     }
-    // console.log({classList})
-        //change to player board in future
-    // console.log({space})
+
     return(<Space 
     key = {`${space.boardName}${space.x}${space.y}`}
     id = {`space${space.x}${space.y}`}
@@ -202,27 +202,6 @@ function Space(props){
   }
 }
 
-// function createBoard(board){
-//     console.log(board)
-//     let boardName = board.name
 
-//  return (Array.from(board.spaces).map(createSpaces))
-
-
-
-
-
-
-
-
-
-// export function Board(board,otherBoard,switchFlag){
-//   if(switchFlag){
-//     const items = board.Spaces;
-//     return (<AnimatedDivs() 
-//       items = "board"
-//       />)
-//   }
-// }
 
 export default App;

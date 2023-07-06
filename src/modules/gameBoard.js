@@ -89,12 +89,13 @@ const Gameboard = function(name,otherBoard){
             space.isHit = true;
             ps.publish("new-message",`Ship hit at ${a},${b}`)
            
+            // document.querySelector()
             space.isShip.self.hit();
             console.log(board)
              ps.publish(`${board.name}-hit`,space.isShip.self)
              ps.publish("display-message", `Hit!!!!`)
              console.log(space.isShip)
-             ps.subscribe("ship-sunk",board.removeShip)
+             ps.subscribe("ship-sunk",removeShip)
             space.isShip.self.isSunk()
             
         } else {
@@ -109,6 +110,7 @@ const Gameboard = function(name,otherBoard){
        if(test){
         console.log("removing ship")
         board.shipsRemaining = board.shipsRemaining -1
+        console.log(board.shipsRemaining)
         areAllSunk()
        }
       ps.unsubscribe("ship-sunk",board.removeShip)
@@ -117,6 +119,13 @@ const Gameboard = function(name,otherBoard){
     function areAllSunk(){
         if(board.shipsRemaining < 1){
             ps.publish("all-sunk",board.name)
+            if(board.name=="gladosBoard"){
+            ps.publish("display-message",`ALL SHIPS SUNK!
+            YOU WIN!!!!`)
+        } else { ps.publish("display-message",`ALL SHIPS SUNK!
+        YOU LOSE 😫`)
+            
+        }
         }
     }
     return{
