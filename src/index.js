@@ -6,6 +6,8 @@ import pubSub from "./modules/pubSub"
 import Gameboard from './modules/gameBoard';
 import setUpGlados from './modules/setUpGlados';
 import AnimatedDivs from './components/AnimatedDivs';
+import displayMessage from './modules/display';
+import gladosMove from './modules/gladosMove';
 
 const ps = pubSub()
 
@@ -47,6 +49,12 @@ ps.subscribe("playerBoard",playerBoard.placeShip)
 // ps.subscribe("playerBoard",AnimatedDivs)
 ps.publish("create-gladosBoard",gladosBoard)
 ps.subscribe("ship-placed",removeShip)
+ps.subscribe("gladosBoard-attack",gladosBoard.receiveAttack)
+ps.subscribe("gladosBoard-hit",testFunc)
+ps.subscribe("gladosBoard-miss",testFunc)
+ps.subscribe("display-message",displayMessage)
+ps.subscribe("glados-attack",gladosMove)
+ps.subscribe("glados-move",playerBoard.receiveAttack)
 
 // document.querySelector(".start").addEventListener("click",()=>
 //    ps.publish("start-board",""))

@@ -34,48 +34,89 @@ function App(props) {
 function Board(){
  
 const [board,setBoard] = useState(playerBoard.board)
-console.log(board.spaces)
+// console.log(board.spaces)
 
 
 
-function handleClick(){
-  // ps.publish("board-change",board)
-  console.log(board)
-  setTimeout(setBoard(board.name === "playerBoard" ? gladosBoard.board :
-    playerBoard.board),500)
+function handleClick(e){
+  let x = Number(e.target.id.substring(5,6))
+  let y = Number(e.target.id.substring(6,7))
+  console.log({x,y})
+  if(board.name==="gladosBoard"){
+  ps.publish("gladosBoard-attack",x,y)
+  // }
+  setTimeout(updateBoard,0);
+  setTimeout(()=> {
+    setBoard(board.name === "playerBoard" ? gladosBoard.board :
+    playerBoard.board)},
+  3000)
+  setTimeout(()=> {
+    setBoard(playerBoard.board)
+    ps.publish("glados-attack",playerBoard);
+
+    updateBoard();
+  },
+  4000)
+}
 }
 
 function handleDragEnter(e){
   e.target.classList.add("pop")
+  // let shipLength = dragItem.id.substring(dragItem.id.length-1)
+  // let dir = dragItem.classList.contains("vertical")? "vertical ": "horizontal"
+  // let x = Number(e.target.id.substring(5,6))
+  // let y = Number(e.target.id.substring(6,7))
+  // // console.log({x,y,shipLength,dir})
+  // // ps.publish("playerBoard",x,y,shipLength,dir)
+  // setTimeout(updateBoard,0)
+  // e.target.classList.add("pop")
 }
 
 function handleDragLeave(e){
   e.target.classList.remove("pop")
+  // let shipLength = dragItem.id.substring(dragItem.id.length-1)
+  // let dir = dragItem.classList.contains("vertical")? "vertical ": "horizontal"
+  // let x = Number(e.target.id.substring(5,6))
+  // let y = Number(e.target.id.substring(6,7))
+  // setTimeout(updateBoard,0)
+  // e.target.classList.remove("pop")
 }
 
 function updateBoard(){
   console.log("updating Board")
   // setTimeout(setBoard(gladosBoard.board),0)
+  const prevBoard = board
   setBoard(stagingBoard.board)
   setTimeout(()=>{
     console.log("setting board")
-    setBoard(playerBoard.board)}
+    setBoard(prevBoard)}
   ,0)
 }
-let shipsToPlayce = 5
+const [shipsLeft,setShipsLeft] = useState(4)
 
-function handleDrop(props){
-  console.log(dragItem)
-  console.log(props)
+function handleDrop(el){
+  // console.log(dragItem)
+
   let shipLength = dragItem.id.substring(dragItem.id.length-1)
   let dir = dragItem.classList.contains("vertical")? "vertical ": "horizontal"
   console.log(shipLength)
-  let x = Number(props.target.id.substring(5,6))
-  let y = Number(props.target.id.substring(6,7))
-  console.log({x,y,shipLength,dir})
+  let x = Number(el.target.id.substring(5,6))
+  let y = Number(el.target.id.substring(6,7))
+  // console.log({x,y,shipLength,dir})
   ps.publish("playerBoard",x,y,shipLength,dir)
+  
+
+  if(shipsLeft < 1){
+    ps.publish("display-message","Game Start!");
+    setTimeout(
+      ()=> setBoard(gladosBoard.board),1000)
+  } else {
+    ps.publish("display-message","Ships remaining " + shipsLeft)
+    
+  }
+  setShipsLeft(prevValue => prevValue - 1)
   setTimeout(updateBoard,0)
-  props.target.classList.add("air-carrier")
+  el.target.classList.add("air-carrier")
   // props.target.appendChild(dragItem)
   // console.log(props.target)
   // dragItem.classList.add("hide")
@@ -121,7 +162,12 @@ function Space(props){
         if(space.boardName == "gladosBoard"){
           classList = classList + " enemy"
          }
-        if(space.isShip){
+         if(space.isHit && space.isShip != null){
+          classList = classList + " hit"}
+        if(space.isHit && space.isShip == null){
+          classList = classList + " miss"}  
+        if(space.isShip){ //&& space.boardName == "playerBoard"){
+          // console.log({space})
           classList = `space ship`
           if(space.isShip.self.length==5){
             classList = classList + " air-carrier"

@@ -91,17 +91,27 @@ const Gameboard = function(name,otherBoard){
            
             space.isShip.self.hit();
             console.log(board)
-             ps.publish("ship-hit",space.isShip.self)
-            // checkShipStatus(space.isShip.self.isSunk)
+             ps.publish(`${board.name}-hit`,space.isShip.self)
+             ps.publish("display-message", `Hit!!!!`)
+             console.log(space.isShip)
+             ps.subscribe("ship-sunk",board.removeShip)
+            space.isShip.self.isSunk()
+            
         } else {
             space.isHit = true;
-            console.log(board)
-            ps.publish("ship-miss",space)
+            console.log("miss at " + {space})
+            ps.publish("gladosBoard-miss",space)
+            ps.publish("display-message", `Miss`)
         }
 
     }
-    function checkShipStatus(ship){
-       ship.isSunk()
+    function removeShip(test){
+       if(test){
+        console.log("removing ship")
+        board.shipsRemaining = board.shipsRemaining -1
+        areAllSunk()
+       }
+      ps.unsubscribe("ship-sunk",board.removeShip)
     }  
 
     function areAllSunk(){
@@ -112,7 +122,7 @@ const Gameboard = function(name,otherBoard){
     return{
         placeShip,
         receiveAttack,
-        checkShipStatus,
+        removeShip,
         areAllSunk,
         board
     }

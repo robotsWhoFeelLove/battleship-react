@@ -11,6 +11,7 @@ body{
     display: grid;
     grid-template-columns: repeat(10, 1fr);
     grid-template-rows: repeat(10, 1fr);
+    /* z-index: -1; */
 }
 .space{
     border: 5px solid #588ac1;
@@ -51,31 +52,37 @@ body{
     border: 5px solid rgba(244, 48, 48, 0.8);
 }
 
-.space.air-carrier,
+.space.air-carrier{
+    background-color: #494546;
+}
+
 .carrier{
     border: 5px solid #696e6a;
     border-radius: 15px;
     background-color: #696e6a;
 }
-/* .space.battleship,
-#bship4>.block{
-    background-color: #97b3d1;
-}
-.space.cruiser,
-#cruiser3>.block,
-#cruiser-3>.block{
-   background-color: #083248;
-}
-.space.destroyer,
-#destroyer2>.block{
-    background-color: #8f9676;
- } */
 
- .space.ship{
+.carrier>div:first-child{
+    background-color: #0077cc;
+    border-radius: 75%;
+}
+.space.battleship{
+    background-color: #c2c5c3;
+}
+
+.space.cruiser{
+   background-color: #9ea29f;
+}
+
+.space.destroyer{
+    background-color: #7a7f7b;
+ }
+
+ /* .space.ship{
     border: 5px solid #696e6a;
     background-color: #696e6a;
     border-radius: 15px;
- }
+ } */
 
 .block{
     /* border: 5px solid white; */
@@ -101,11 +108,9 @@ body{
    flex-direction: column;
 }
 
-/* .space.carrier{
-    display: inline-block;
-    position: relative;
-    width: 25vw;
-} */
+.space.ship{
+    border: 5px solid #8fb0d5;
+}
 
 .player-board>div:over{
     animation: pop 0.3s linear .3;
@@ -114,13 +119,32 @@ body{
     border-radius: 15px; */
 }
 
+.space.hit{
+    background-color: red;
+}
+.space.miss{
+    background-color: green;
+}
+
 .hide{
     display: none;
 }
 
+.display{
+    position: Absolute;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 100px;
+    text-align: center;
+    width:80vw;
+    left: 50%;
+    margin-left: -40vw;
+    z-index: 2;
+    font-weight: 800;
+}
+
 .pop{
     animation: pop 0.3s linear .3;
-    border:5px solid#0077cc;
+    border:5px solid rgb(250, 87, 54);
     color:#0077cc;
     border-radius: 15px;
   }
